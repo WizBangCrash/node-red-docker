@@ -2,6 +2,19 @@
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-red/node-red-docker.svg)](https://greenkeeper.io/)
 
+This project is a fork of the main [https://github.com/node-red/node-red-docker](node-red-docker)
+repo, but includes a number of changes to the docker file to allow
+me to run the HomeKit nodes with no issues. It includes all the necessary packages required
+for Bonjour and mDNS. It also includes a fix to the node-red-contrib-homekit source code to stop
+node-red crashing when you click the "Deploy" button after configuroing HomeKit nodes.
+
+The docker image works out at about 45MB larger than the original repo.
+
+I will attempt to keep it up to date with node-red (currently has 0.18.2).
+Everything else is the same as the original repo.
+
+-------------
+
 This project describes some of the many ways Node-RED can be run under Docker.
 Some basic familiarity with Docker and the
 [Docker Command Line](https://docs.docker.com/reference/commandline/cli/)

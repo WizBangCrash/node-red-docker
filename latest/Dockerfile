@@ -1,8 +1,8 @@
-FROM node:6
+FROM node:9
 LABEL maintainer "Dave Dix <docker@dixieworld.co.uk>"
 
 ### Environment variables
-ENV NODE_RED_VERSION="0.18.2"
+ENV NODE_RED_VERSION="0.18.4"
 ENV GOSU_VERSION="1.10"
 
 # Home directory for Node-RED application source code.
@@ -47,11 +47,13 @@ USER node-red
 WORKDIR /usr/src/node-red
 
 # package.json contains Node-RED NPM module and node dependencies
+# The versions of homekit and light-scheduler are fixed so they can be patched
+# As soon as there are fixed versions on npm I'll change this
 COPY package.json /usr/src/node-red/
 RUN npm install
-RUN npm install node-red-contrib-huemagic \
-    node-red-contrib-homekit \
-    node-red-contrib-light-scheduler \
+RUN npm install node-red-contrib-huemagic@>1.4.0 \
+    node-red-contrib-homekit@>0.2.1 \
+    node-red-contrib-light-scheduler@>0.0.11 \
     node-red-node-wol
 
 # Fix up the HomeKit Bug

@@ -10,7 +10,7 @@ node-red crashing when you click the "Deploy" button after configuroing HomeKit 
 
 The docker image works out at about 45MB larger than the original repo.
 
-I will attempt to keep it up to date with node-red (currently has 0.18.2).
+I will attempt to keep it up to date with node-red (currently has 0.18.4).
 Everything else is the same as the original repo.
 
 -------------

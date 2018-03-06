@@ -46,20 +46,33 @@ USER node-red
 
 WORKDIR /usr/src/node-red
 
+# Add my SSH key
+RUN mkdir -p /usr/src/node-red/.ssh && chown node-red:node-red /usr/src/node-red/.ssh
+COPY --chown=node-red:node-red latest/id_rsa /usr/src/node-red/.ssh
+COPY --chown=node-red:node-red latest/id_rsa.pub /usr/src/node-red/.ssh
+COPY --chown=node-red:node-red latest/known_hosts /usr/src/node-red/.ssh
+RUN chmod 600 /usr/src/node-red/.ssh/id_rsa*
+
 # package.json contains Node-RED NPM module and node dependencies
 # The versions of homekit and light-scheduler are fixed so they can be patched
 # As soon as there are fixed versions on npm I'll change this
-COPY package.json /usr/src/node-red/
+COPY --chown=node-red:node-red package.json /usr/src/node-red/
 RUN npm install
-RUN npm install node-red-contrib-huemagic@>1.4.0 \
-    node-red-contrib-homekit@>0.2.1 \
-    node-red-contrib-light-scheduler@>0.0.11 \
-    node-red-node-wol
+RUN npm install node-red-contrib-huemagic@">=1.4.0" \
+    node-red-contrib-homekit@">=0.2.1" \
+    node-red-contrib-light-scheduler@">=0.0.11" \
+    node-red-node-wol \
+    gitlab:WizBang/node-red-contrib-yamaha-avr
 
 # Fix up the HomeKit Bug
-COPY latest/homekit.js /usr/src/node-red/node_modules/node-red-contrib-homekit
-COPY latest/light-scheduler.js /usr/src/node-red/node_modules/node-red-contrib-light-scheduler
-COPY latest/settings.js /data
+COPY --chown=node-red:node-red latest/homekit.js /usr/src/node-red/node_modules/node-red-contrib-homekit
+COPY --chown=node-red:node-red latest/light-scheduler.js /usr/src/node-red/node_modules/node-red-contrib-light-scheduler
+COPY --chown=node-red:node-red latest/settings.js /data
+
+
+# Fix up the node-red settings to enable projects etc.
+# RUN sed -i "s/\/\/debugUseColors: true,/debugUseColors: true,/g" /usr/src/node-red/settings.js && \
+#     sed -i "s/\/\/debugUseColors: true,/debugUseColors: true,/g" /usr/src/node-red/settings.js && \
 
 # User configuration directory volume
 EXPOSE 1880

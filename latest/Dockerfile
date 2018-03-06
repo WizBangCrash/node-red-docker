@@ -59,8 +59,8 @@ RUN chmod 600 /usr/src/node-red/.ssh/id_rsa*
 COPY --chown=node-red:node-red package.json /usr/src/node-red/
 RUN npm install
 RUN npm install node-red-contrib-huemagic@">=1.4.0" \
-    node-red-contrib-homekit@">=0.2.1" \
-    node-red-contrib-light-scheduler@">=0.0.11" \
+    node-red-contrib-homekit@"0.2.1" \
+    node-red-contrib-light-scheduler@"0.0.11" \
     node-red-node-wol \
     gitlab:WizBang/node-red-contrib-yamaha-avr
 

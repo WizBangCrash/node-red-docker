@@ -28,7 +28,11 @@
         "node-red-node-msgpack": "*",
         "node-red-node-base64": "*",
         "node-red-node-suncalc": "*",
-        "node-red-node-random": "*"
+        "node-red-node-random": "*",
+        "node-red-node-wol": "*",
+        "node-red-contrib-huemagic": ">=1.4.0",
+        "@plasma2450/node-red-contrib-homekit-bridged": ">=0.3.9",
+        "node-red-contrib-yamaha-avr": "git+ssh://git@gitlab.com:WizBang/node-red-contrib-yamaha-avr.git"
     },
     "engines": {
         "node": "9.*.*"

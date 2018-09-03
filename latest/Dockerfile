@@ -1,8 +1,10 @@
-FROM node:9
+FROM node:10
 LABEL maintainer "Dave Dix <docker@dixieworld.co.uk>"
 
 ### Environment variables
-ENV NODE_RED_VERSION="0.18.4"
+ENV NODE_VERSION="10"
+ENV CONTAINER_VERSION="0.0.3"
+ENV NODE_RED_VERSION="0.19.2"
 ENV GOSU_VERSION="1.10"
 
 # Home directory for Node-RED application source code.
@@ -54,19 +56,23 @@ COPY --chown=node-red:node-red latest/known_hosts /usr/src/node-red/.ssh
 RUN chmod 600 /usr/src/node-red/.ssh/id_rsa*
 
 # package.json contains Node-RED NPM module and node dependencies
-# The versions of homekit and light-scheduler are fixed so they can be patched
+# The version of light-scheduler is fixed so it can be patched
 # As soon as there are fixed versions on npm I'll change this
 COPY --chown=node-red:node-red package.json /usr/src/node-red/
+# Set the container version
+RUN sed -i "s/\(node\": \"\).*\(\"\)/\1$NODE_VERSION\.\*\.\*\"/g" package.json
+# Set the container version
+RUN sed -i "s/\(version\": \"\).*\(\"\)/\1$CONTAINER_VERSION\"/g" package.json
+# Set the node-red version to be installed
+RUN sed -i "s/\(node-red\": \"\).*\(\"\)/\1$NODE_RED_VERSION\"/g" package.json
+# RUN cat package.json
 RUN npm install
-RUN npm install node-red-contrib-huemagic@">=1.4.0" \
-    node-red-contrib-homekit@"0.2.1" \
-    node-red-contrib-light-scheduler@"0.0.11" \
-    node-red-node-wol \
-    gitlab:WizBang/node-red-contrib-yamaha-avr
+RUN npm install node-red-contrib-light-scheduler@"0.0.11" 
+RUN npm audit fix
 
-# Fix up the HomeKit Bug
-COPY --chown=node-red:node-red latest/homekit.js /usr/src/node-red/node_modules/node-red-contrib-homekit
+# Fix up the light-scheduler Bug
 COPY --chown=node-red:node-red latest/light-scheduler.js /usr/src/node-red/node_modules/node-red-contrib-light-scheduler
+# Copy in my default settings
 COPY --chown=node-red:node-red latest/settings.js /data
 
 

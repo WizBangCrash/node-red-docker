@@ -13,8 +13,11 @@ RUN mkdir -p /usr/src/node-red
 # User data directory, contains flows, config and nodes.
 RUN mkdir /data
 
+# Install standard root CAs for https access
+RUN apt-get install -y --no-install-recommends ca-certificates
+
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget ca-certificates avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev  && \
+    apt-get install -y --no-install-recommends wget avahi-daemon avahi-discover libnss-mdns libavahi-compat-libdnssd-dev  && \
     wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture)"  && \
     wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$(dpkg --print-architecture).asc" && \
     export GNUPGHOME="$(mktemp -d)" && \
@@ -33,7 +36,7 @@ RUN apt-get update && \
     apt-get -y autoremove && \
     gosu nobody true && \
     rm -rf "$GNUPGHOME" /usr/local/bin/gosu.asc && \
-    apt-get purge -y --auto-remove ca-certificates wget && \
+    apt-get purge -y --auto-remove wget && \
     rm -rf /tmp/* && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/tmp/* 
@@ -48,13 +51,6 @@ USER node-red
 
 WORKDIR /usr/src/node-red
 
-# Add my SSH key
-RUN mkdir -p /usr/src/node-red/.ssh && chown node-red:node-red /usr/src/node-red/.ssh
-COPY --chown=node-red:node-red latest/id_rsa /usr/src/node-red/.ssh
-COPY --chown=node-red:node-red latest/id_rsa.pub /usr/src/node-red/.ssh
-COPY --chown=node-red:node-red latest/known_hosts /usr/src/node-red/.ssh
-RUN chmod 600 /usr/src/node-red/.ssh/id_rsa*
-
 # package.json contains Node-RED NPM module and node dependencies
 # The version of light-scheduler is fixed so it can be patched
 # As soon as there are fixed versions on npm I'll change this
@@ -67,23 +63,15 @@ RUN sed -i "s/\(version\": \"\).*\(\"\)/\1$CONTAINER_VERSION\"/g" package.json
 RUN sed -i "s/\(node-red\": \"\).*\(\"\)/\1$NODE_RED_VERSION\"/g" package.json
 # RUN cat package.json
 RUN npm install
-RUN npm install node-red-contrib-light-scheduler@"0.0.11" 
 RUN npm audit fix
 
 # Fix up the light-scheduler Bug
 COPY --chown=node-red:node-red latest/light-scheduler.js /usr/src/node-red/node_modules/node-red-contrib-light-scheduler
-# Copy in my default settings
-COPY --chown=node-red:node-red latest/settings.js /data
 
-
-# Fix up the node-red settings to enable projects etc.
-# RUN sed -i "s/\/\/debugUseColors: true,/debugUseColors: true,/g" /usr/src/node-red/settings.js && \
-#     sed -i "s/\/\/debugUseColors: true,/debugUseColors: true,/g" /usr/src/node-red/settings.js && \
-
-# User configuration directory volume
+# node-red UI port
 EXPOSE 1880
 
-# # Environment variable holding file path for flows configuration
+# Environment variable holding file path for flows configuration
 ENV FLOWS=flows.json
 ENV NODE_PATH=/usr/src/node-red/node_modules:/data/node_modules
 

@@ -24,17 +24,16 @@
         }
     ],
     "dependencies": {
-        "node-red": "0.18.4",
-        "node-red-node-msgpack": "*",
-        "node-red-node-base64": "*",
+        "node-red": "0.19.2",
         "node-red-node-suncalc": "*",
         "node-red-node-random": "*",
         "node-red-node-wol": "*",
         "node-red-contrib-huemagic": ">=1.4.0",
         "@plasma2450/node-red-contrib-homekit-bridged": ">=0.3.9",
-        "node-red-contrib-yamaha-avr": "git+ssh://git@gitlab.com:WizBang/node-red-contrib-yamaha-avr.git"
+        "node-red-contrib-light-scheduler": "0.0.11",
+        "node-red-contrib-yamaha-avr": "git+https://gitlab.com/WizBang/node-red-contrib-yamaha-avr.git"
     },
     "engines": {
-        "node": "9.*.*"
+        "node": "10.*.*"
     }
 }
